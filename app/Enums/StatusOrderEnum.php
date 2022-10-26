@@ -15,7 +15,7 @@ final class StatusOrderEnum extends Enum
     const Delivering =   2;
     const Delivered = 3;
     const Returned = 4;
-    public function getStatus($sta)
+    public static function getStatus($sta)
     {
         if ($sta == 1) {
             return 'Đang sử lý';

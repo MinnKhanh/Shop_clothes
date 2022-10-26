@@ -55,9 +55,12 @@ class BrandController extends Controller
                 );
             }
             DB::commit();
+            if ($request->input('api'))
+                return response()->json(['success' => 'Thành công'], 200);
             return Redirect::route('admin.brand.index');
         } catch (Throwable $e) {
             DB::rollBack();
+            if ($request->input('api')) return response()->json(['error' => 'Thất bại'], 404);
             return Redirect::back()->withInput($request->input())->withErrors(['msg' => $e->getMessage()]);
         }
     }

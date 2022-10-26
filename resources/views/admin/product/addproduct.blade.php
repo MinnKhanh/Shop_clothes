@@ -84,7 +84,8 @@
                     <div class="col-md-6 form-group">
                         <label>Tên sản phẩm</label>
                         <input name="name" id="tensp" class="form-control shadow-none rounded-0"
-                            value="{{ isset($edit) ? $product['name'] : old('name') }}" placeholder="Áo sơ mi dài tay khử mùi">
+                            value="{{ isset($edit) ? $product['name'] : old('name') }}"
+                            placeholder="Áo sơ mi dài tay khử mùi">
                         @if ($errors->has('name'))
                             <div class="error">{{ $errors->first('name') }}</div>
                         @endif
@@ -109,11 +110,14 @@
                         <label>Giới Tính</label>
                         <select name="gender" id="" class="form-control shadow-none rounded-0">
                             <option>--Chọn--</option>
-                            <option {{ (isset($edit) ? $product['gender'] : old('gender')) == 1 ? 'selected' : '' }} value=1>Nam
+                            <option {{ (isset($edit) ? $product['gender'] : old('gender')) == 1 ? 'selected' : '' }}
+                                value=1>Nam
                             </option>
-                            <option {{ (isset($edit) ? $product['gender'] : old('gender')) == 2 ? 'selected' : '' }} value=2>Nữ
+                            <option {{ (isset($edit) ? $product['gender'] : old('gender')) == 2 ? 'selected' : '' }}
+                                value=2>Nữ
                             </option>
-                            <option {{ (isset($edit) ? $product['gender'] : old('gender')) == 3 ? 'selected' : '' }} value=3>Không
+                            <option {{ (isset($edit) ? $product['gender'] : old('gender')) == 3 ? 'selected' : '' }}
+                                value=3>Không
                                 phân biệt giới tính</option>
                         </select>
                         @if ($errors->has('gender'))
@@ -142,7 +146,8 @@
                             dd($product['img'][0]['path']);
                         @endphp --}}
                             <img style="width:100px; height:100%;" class="imgchange"
-                                src="{{ isset($edit) ? asset('storage/' . $product['img'][0]['path']) : '' }}" id="imgtype" />
+                                src="{{ isset($edit) ? asset('storage/' . $product['img'][0]['path']) : '' }}"
+                                id="imgtype" />
                         </div>
                     </div>
                     <div class="col-md-4 form-group">
@@ -166,9 +171,11 @@
                     <div class="col-md-3">
                         <label>Trạng thái</label>
                         <select class="form-control" name="status" id="TrangThai">
-                            <option value=1 {{ (isset($edit) ? $product['status'] : old('status')) == 0 ? 'selected' : '' }}>Hiển thị
+                            <option value=1
+                                {{ (isset($edit) ? $product['status'] : old('status')) == 0 ? 'selected' : '' }}>Hiển thị
                             </option>
-                            <option value=0 {{ (isset($edit) ? $product['status'] : old('status')) == 1 ? 'selected' : '' }}>Ẩn
+                            <option value=0
+                                {{ (isset($edit) ? $product['status'] : old('status')) == 1 ? 'selected' : '' }}>Ẩn
                             </option>
                         </select>
                         @if ($errors->has('status'))
@@ -178,9 +185,11 @@
                     <div class="col-md-3">
                         <label>Sản phẩm nổi bật</label>
                         <select class="form-control" name="featured" id="NoiBat">
-                            <option value=0 {{ (isset($edit) ? $product['featured'] : old('featured')) == 0 ? 'selected' : '' }}>Có
+                            <option value=0
+                                {{ (isset($edit) ? $product['featured'] : old('featured')) == 0 ? 'selected' : '' }}>Có
                             </option>
-                            <option value=1 {{ (isset($edit) ? $product['featured'] : old('featured')) == 1 ? 'selected' : '' }}>
+                            <option value=1
+                                {{ (isset($edit) ? $product['featured'] : old('featured')) == 1 ? 'selected' : '' }}>
                                 Không</option>
                         </select>
                         @if ($errors->has('featured'))
@@ -211,16 +220,17 @@
                 <form class="modal-body" id="formtype" action="{{ route('admin.type.store') }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
-
+                    <input type="hidden" value="1" name="api">
                     <div class="col-md-12 form-group mb-4">
                         <label>Tên Loại</label>
-                        <input class="form-control shadow-none rounded-0" id="nametype" name="name" type="text">
+                        <input class="form-control shadow-none rounded-0 data" id="nametype" name="name"
+                            type="text">
                         <span class="text-danger errorname"></span>
                     </div>
                     <div class="col-md-12 row form-group">
                         <div class="col-md-8 form-group">
                             <label>Ảnh</label>
-                            <input class="form-control shadow-none rounded-0  file-img" name="photo" id="phototype"
+                            <input class="form-control shadow-none rounded-0 data file-img" name="photo" id="phototype"
                                 type="file">
                             <span class="text-danger errorphoto"></span>
                         </div>
@@ -252,6 +262,7 @@
                 <form class="modal-body" id="formcategory" action="{{ route('admin.category.store') }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" value="1" name="api">
                     <div class="col-md-12 form-group">
                         <label>Phân loại chính</label>
                         <select name="type" id="type_cate" style="width: 100%"
@@ -265,15 +276,15 @@
                     </div>
                     <div class="col-md-12 form-group mb-4">
                         <label>Tên Loại</label>
-                        <input class="form-control shadow-none rounded-0" id="namecategory" name="name" type="text"
-                            disabled>
+                        <input class="form-control shadow-none rounded-0 data" id="namecategory" name="name"
+                            type="text" disabled>
                         <span class="text-danger errorname"></span>
                     </div>
                     <div class="col-md-12 row form-group">
                         <div class="col-md-8 form-group">
                             <label>Ảnh</label>
-                            <input class="form-control shadow-none rounded-0  file-img" name="photo" id="photocategory"
-                                type="file" disabled>
+                            <input class="form-control shadow-none rounded-0 data file-img" name="photo"
+                                id="photocategory" type="file" disabled>
                             <span class="text-danger errorphoto"></span>
                         </div>
                         <div class="col-md-4 form-group">
@@ -303,10 +314,11 @@
                 <form class="modal-body" id="formbrand" action="{{ route('admin.brand.store') }}" method="post"
                     enctype="multipart/form-data">
                     @csrf
-
+                    <input type="hidden" value="1" name="api">
                     <div class="col-md-12 form-group mb-4">
                         <label>Tên Loại</label>
-                        <input class="form-control shadow-none rounded-0" id="namebrand" name="name" type="text">
+                        <input class="form-control shadow-none rounded-0 data" id="namebrand" name="name"
+                            type="text">
                         <span class="text-danger errorname"></span>
                     </div>
                     <div class="col-md-12 form-group mb-4">
@@ -318,14 +330,14 @@
                     </div>
                     <div class="col-md-12 form-group mb-4">
                         <label>Mô Tả</label>
-                        <textarea class="form-control shadow-none rounded-0" id="mota" name="description" type="text"></textarea>
+                        <textarea class="form-control shadow-none rounded-0 data" id="mota" name="description" type="text"></textarea>
                         <span class="text-danger errordescription"></span>
                     </div>
                     <div class="col-md-12 row form-group">
                         <div class="col-md-8 form-group">
                             <label>Ảnh</label>
-                            <input class="form-control shadow-none rounded-0  file-img" name="photo" id="photobrand"
-                                type="file">
+                            <input class="form-control shadow-none rounded-0 data file-img" name="photo"
+                                id="photobrand" type="file">
                             <span class="text-danger errorphoto"></span>
                         </div>
                         <div class="col-md-4 form-group">
@@ -416,7 +428,7 @@
         }
 
         function resetModal(obj) {
-            obj.find('input').val(null)
+            obj.find('.data').val(null)
             obj.find('.text-danger').text('')
             obj.find('img').attr('src', '')
             obj.find('textarea').val('')

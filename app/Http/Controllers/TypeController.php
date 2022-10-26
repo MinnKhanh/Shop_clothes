@@ -50,7 +50,7 @@ class TypeController extends Controller
     {
 
         $request->validate([
-            'name' => $request->input('id') ? ['required', Rule::unique('type', 'name')->ignore($request->input('id'))] : ['required', Rule::unique('type', 'name')],
+            'name' => $request->input('id') ? ['required', Rule::unique('type', 'name')->whereNull('deleted_at')->ignore($request->input('id'))] : ['required', Rule::unique('type', 'name')->whereNull('deleted_at')],
             'photo.*' => $request->input('id') ? '' : ['required', 'image'],
         ]);
 
@@ -83,46 +83,17 @@ class TypeController extends Controller
             }
             DB::commit();
             SystemConfigController::removeCache();
+            if ($request->input('api'))
+                return response()->json(['success' => 'Thành công'], 200);
             return redirect()->route('admin.type.index');
         } catch (Throwable $e) {
             DB::rollBack();
+            if ($request->input('api'))
+                return response()->json(['error' => 'Thất bại'], 400);
             return Redirect::back()->withInput($request->input())->withErrors(['msg' => 'Thêm không thành công']);
         }
     }
-    public function storeApi(Request $request)
-    {
-        $request->validate([
-            'name' => $request->input('id') ? ['required', Rule::unique('type', 'name')->ignore($request->input('id'))] : ['required', Rule::unique('type', 'name')],
-            'photo.*' => $request->input('id') ? '' : ['required', 'image'],
-        ]);
-        $type = new Type();
-        $logo = null;
-        if ($request->file('photo')) {
-            $logo = optional($request->file('photo'))->store('public/type_img');
-            $logo = str_replace("public/", "", $logo);
-        }
-        if ($request->input('id')) {
-            $type = Type::where('id', $request->input('id'))->first();
-            if ($logo) {
-                Img::where('product_id', $request->input('id'))->where('type', 3)->where('img_index', 1)->update([
-                    'path' => $logo,
-                ]);
-            }
-            $type->name = $request->input('name');
-            $type->save();
-        } else {
-            $type->name = $request->input('name');
-            $type->save();
-            Img::create([
-                'product_id' => $type->id,
-                'path' => $logo,
-                'type' => 3,
-                'img_index' => 1
-            ]);
-        }
-        SystemConfigController::removeCache();
-        return response()->json(['success' => "Xóa thành công"], 200);;
-    }
+
     public function index(Request $request)
     {
         // $typenav = Type::with('Img', 'Categories')->withCount('Product')
