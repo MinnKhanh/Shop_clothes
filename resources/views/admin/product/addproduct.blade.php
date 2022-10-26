@@ -377,12 +377,14 @@
         $(".file-img").change(function() {
             let img = $(this).val()
             let e = $(this)
-            console.log(img)
+            let eleimg = $(this).parent().parent().find('img')
+
+            console.log(eleimg)
             const reader = new FileReader();
             reader.addEventListener("load", function() {
                 upload_img = reader.result;
                 console.log(upload_img)
-                $('.imgchange').attr("src", upload_img)
+                eleimg.attr("src", upload_img)
             })
             reader.readAsDataURL(this.files[0])
             console.log($(this).val())

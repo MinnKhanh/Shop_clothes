@@ -28,8 +28,6 @@
             background-color: #ffc107;
         }
     </style>
-    <script src="{{ asset('js/ckeditor/ckeditor.js') }}"></script>
-    <script src="{{ asset('js/ckeditor/style.js') }}"></script>
 @endpush
 
 @section('content')
@@ -76,6 +74,8 @@
     </div>
 @endsection
 @push('js')
+    <script src="{{ asset('js/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('js/ckeditor/style.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.28/dist/sweetalert2.all.min.js"></script>
     <script>
         CKEDITOR.replace('editor');

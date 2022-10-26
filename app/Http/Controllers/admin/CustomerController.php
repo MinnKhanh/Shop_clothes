@@ -46,6 +46,11 @@ class CustomerController extends Controller
     }
     public function sendNotification(Request $request)
     {
+        $request->validate([
+            'name' => 'required',
+            'photo' => 'required',
+            'message' => 'required',
+        ]);
         $message = $request->input('message');
         $logo = optional($request->file('photo'))->store('public/introduce_img');
         $logo = str_replace("public/", "", $logo);

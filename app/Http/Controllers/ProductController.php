@@ -132,7 +132,9 @@ class ProductController extends Controller
         $type = Type::with('Img', 'Categories')->withCount('Product')->get()->toArray();
         $data = ProductDetail::with(['colorProduct', 'Img' => fn ($query) => $query->where('type', 2)->where('img_index', 1)])->where('id_product', $request->input('id'))->get()->toArray();
         $product = Products::with('Img')->where('id', $request->input('id'))->first()->toArray();
-        $dataSuggest = Products::with('Img')->where('type', $product['type'])->where('category', $product['category'])->where('id', '!=', $product['id'])->get()->toArray();
+        $dataSuggest = Products::with('Img')->where('type', $product['type'])
+            // ->where('category', $product['category'])
+            ->where('id', '!=', $product['id'])->get()->toArray();
         return view('products.detail', [
             'data' => $data,
             'product' => $product,
