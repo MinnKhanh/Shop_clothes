@@ -8,7 +8,10 @@ use App\Models\Img;
 use App\Models\Products;
 use App\Models\Type;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class TypeController extends Controller
 {
@@ -45,6 +48,49 @@ class TypeController extends Controller
     }
     public function store(Request $request)
     {
+
+        $request->validate([
+            'name' => $request->input('id') ? ['required', Rule::unique('type', 'name')->ignore($request->input('id'))] : ['required', Rule::unique('type', 'name')],
+            'photo.*' => $request->input('id') ? '' : ['required', 'image'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $type = new Type();
+            $logo = null;
+            if ($request->file('photo')) {
+                $logo = optional($request->file('photo'))->store('public/type_img');
+                $logo = str_replace("public/", "", $logo);
+            }
+            if ($request->input('id')) {
+                $type = Type::where('id', $request->input('id'))->first();
+                if ($logo) {
+                    Img::where('product_id', $request->input('id'))->where('type', 3)->where('img_index', 1)->update([
+                        'path' => $logo,
+                    ]);
+                }
+                $type->name = $request->input('name');
+                $type->save();
+            } else {
+                $type->name = $request->input('name');
+                $type->save();
+                Img::create([
+                    'product_id' => $type->id,
+                    'path' => $logo,
+                    'type' => 3,
+                    'img_index' => 1
+                ]);
+            }
+            DB::commit();
+            SystemConfigController::removeCache();
+            return redirect()->route('admin.type.index');
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return Redirect::back()->withInput($request->input())->withErrors(['msg' => 'Thêm không thành công']);
+        }
+    }
+    public function storeApi(Request $request)
+    {
         $request->validate([
             'name' => $request->input('id') ? ['required', Rule::unique('type', 'name')->ignore($request->input('id'))] : ['required', Rule::unique('type', 'name')],
             'photo.*' => $request->input('id') ? '' : ['required', 'image'],
@@ -75,7 +121,7 @@ class TypeController extends Controller
             ]);
         }
         SystemConfigController::removeCache();
-        return redirect()->route('admin.type.index');
+        return response()->json(['success' => "Xóa thành công"], 200);;
     }
     public function index(Request $request)
     {

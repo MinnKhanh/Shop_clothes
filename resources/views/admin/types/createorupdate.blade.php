@@ -5,6 +5,11 @@
             width: 100%;
             height: 100%;
         }
+
+        .errorname {
+            color: red;
+
+        }
     </style>
 @endpush
 @section('content')
@@ -13,6 +18,11 @@
             <h5 class="title position-relative text-dark text-uppercase mb-3">
                 <span class="bg-secondary pe-3">Thông tin phân loại</span>
             </h5>
+            <span class="text-danger errorname">
+                @if ($errors->has('msg'))
+                    <div class="error">{{ $errors->first('msg') }}</div>
+                @endif
+            </span>
             <div class="custom-datatable bg-light p-30 table-responsive">
                 <form id="formcategory" class="" action="{{ route('admin.type.store') }}" method="post"
                     enctype="multipart/form-data">
@@ -24,13 +34,21 @@
                         <label>Tên Loại</label>
                         <input class="form-control shadow-none rounded-0" id="namecategory" type="text" name="name"
                             value={{ isset($type) ? $type['name'] : '' }}>
-                        <span class="text-danger errorname"></span>
+                        <span class="text-danger errorname">
+                            @if ($errors->has('name'))
+                                {{ $errors->first('name') }}
+                            @endif
+                        </span>
                     </div>
                     <div class="col-md-6 form-group">
                         <label>Ảnh</label>
                         <input class="form-control shadow-none rounded-0  file-img" name="photo" id="photocategory"
                             type="file">
-                        <span class="text-danger errorphoto"></span>
+                        <span class="text-danger errorphoto">
+                            @if ($errors->has('photo'))
+                                {{ $errors->first('photo') }}
+                            @endif
+                        </span>
                     </div>
                     <div class="col-md-6 form-group">
                         <img style="width:200px; height:100%;"

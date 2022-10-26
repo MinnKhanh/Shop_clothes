@@ -61,7 +61,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         Artisan::call('cache:clear');
-        //dd($request->all());
+        // dd($request->file('photo'));
         DB::beginTransaction();
         try {
 
@@ -104,7 +104,6 @@ class ProductController extends Controller
             return redirect()->route('admin.product.index');
         } catch (Throwable $e) {
             DB::rollBack();
-            dd($e);
             return Redirect::back()->withInput($request->input())->withErrors(['msg' => $e->getMessage()]);
         }
     }

@@ -61,6 +61,7 @@ Route::group([
     Route::get('/', [TypeController::class, 'index'])->name('index');
     Route::get('/create', [TypeController::class, 'create'])->name('create');
     Route::post('/store', [TypeController::class, 'store'])->name('store');
+    Route::post('/storeApi', [TypeController::class, 'storeApi'])->name('storeApi');
     Route::get('/update', [TypeController::class, 'update'])->name('update');
     Route::delete('/delete', [TypeController::class, 'delete'])->name('delete');
 });
@@ -85,6 +86,7 @@ Route::group([
     Route::get('/create', [BrandController::class, 'create'])->name('create');
     Route::get('/update', [BrandController::class, 'update'])->name('update');
     Route::post('/store', [BrandController::class, 'store'])->name('store');
+    Route::post('/storebyajax', [BrandController::class, 'storebyajax'])->name('storebyajax');
     Route::delete('/delete', [BrandController::class, 'delete'])->name('delete');
 });
 Route::group([

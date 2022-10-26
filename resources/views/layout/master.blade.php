@@ -26,7 +26,7 @@
     <link href={{ asset('css/style.css') }} rel="stylesheet">
     @stack('css')
     <style>
-        .container-spin {
+        /* .container-spin {
             position: fixed;
             display: inline-block;
             box-sizing: border-box;
@@ -78,14 +78,83 @@
             100% {
                 transform: rotate(360deg);
             }
+        } */
+
+        #preloder {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 999999;
+            background: #000;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -13px;
+            margin-left: -13px;
+            border-radius: 60px;
+            animation: loader 0.8s linear infinite;
+            -webkit-animation: loader 0.8s linear infinite;
+        }
+
+        @keyframes loader {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+                border: 4px solid yellow;
+                border-left-color: transparent;
+            }
+
+            50% {
+                -webkit-transform: rotate(180deg);
+                transform: rotate(180deg);
+                border: 4px solid yellow;
+                border-left-color: transparent;
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+                border: 4px solid yellow;
+                border-left-color: transparent;
+            }
+        }
+
+        @-webkit-keyframes loader {
+            0% {
+                -webkit-transform: rotate(0deg);
+                border: 4px solid yellow;
+                border-left-color: transparent;
+            }
+
+            50% {
+                -webkit-transform: rotate(180deg);
+                border: 4px solid yellow;
+                border-left-color: transparent;
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                border: 4px solid yellow;
+                border-left-color: transparent;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container-spin">
-        <div class="circle"></div>
+    <div id="preloder">
+        <div class="loader"></div>
     </div>
+    {{-- <div class="container-spin">
+        <div class="circle"></div>
+    </div> --}}
     <!-- Topbar Start -->
     @include('layout.topbar')
     <!-- Topbar End -->
@@ -120,8 +189,25 @@
     <script src={{ asset('js/main.js') }}></script>
     @stack('js')
     <script>
-        $(window).on("load", function() {
-            $(".container-spin").fadeOut("fast");
+        // $(window).on("load", function() {
+        //     $(".container-spin").fadeOut("fast");
+        // });
+        $(window).on('load', function() {
+            // $(".container-spin").fadeOut();
+            // $(".circle").delay(10).fadeOut("slow");
+            $(".loader").fadeOut();
+            $("#preloder").delay(200).fadeOut("slow");
+            // /*------------------
+            //     Gallery filter
+            // --------------------*/
+            // $('.filter__controls li').on('click', function() {
+            //     $('.filter__controls li').removeClass('active');
+            //     $(this).addClass('active');
+            // });
+            // if ($('.product__filter').length > 0) {
+            //     var containerEl = document.querySelector('.product__filter');
+            //     var mixer = mixitup(containerEl);
+            // }
         });
     </script>
 </body>
