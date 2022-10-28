@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Discount;
 use App\Models\DiscountUser;
 use App\Models\Img;
+use App\Models\Products;
 use App\Models\Type;
+use App\Models\User;
 use Facade\FlareClient\Http\Response;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
@@ -30,21 +32,29 @@ class DiscountController extends Controller
     }
     public function edit(Request $request)
     {
-        return view('admin.discount.CreateOrUpdate', ['typenav' => $this->typenav, 'discount' => Discount::with('Img')->where('id', $request->input('id'))->first()->toArray(), 'isedit' => $request->input('id')]);
+        $listproduct = Products::with('Img')->get()->toArray();
+        return view('admin.discount.CreateOrUpdate', ['typenav' => $this->typenav, 'discount' => Discount::with('Img')->where('id', $request->input('id'))->first()->toArray(), 'isedit' => $request->input('id'), 'listproduct' => $listproduct]);
     }
     public function delete(Request $request)
     {
+        DB::beginTransaction();
         try {
-            Discount::where('id', $request->input('id'))->delete();
-            return Redirect::route('admin.discount.index');
+            $discount = Discount::where('id', $request->input('id'));
+            if ($discount->first()->type == 1) {
+                Products::where('id', $discount->first()->relation_id)->update(['price_discount' => 0]);
+            }
+            $discount->delete();
+            DB::commit();
+            return response()->json(['success' => 'Thành công'], 200);
         } catch (Throwable $e) {
             DB::rollBack();
-            return Redirect::back()->withInput($request->input())->withErrors(['msg' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
     public function create(Request $request)
     {
-        return view('admin.discount.CreateOrUpdate', ['typenav' => $this->typenav]);
+        $listproduct = Products::with('Img')->get()->toArray();
+        return view('admin.discount.CreateOrUpdate', ['typenav' => $this->typenav, 'listproduct' => $listproduct]);
     }
     public function update(Request $request)
     {
@@ -70,6 +80,18 @@ class DiscountController extends Controller
             $discount->code = $request->input('code');
             $discount->discription = $request->input('description');
             $discount->unit = $request->input('unit');
+            if ($request->input('type') == 1) {
+                $discount->relation_id = $request->input('product');
+                $price = Products::where('id', $request->input('product'))->first()->priceSell;
+                $pricediscount = 0;
+                if ($request->input('unit') == 1) {
+                    $pricediscount = (1 - (floatval($request->input('persent')) / 100)) * $price;
+                } else {
+                    $pricediscount = $price - floatval($request->input('persent'));
+                }
+
+                Products::where('id', $request->input('product'))->update(['price_discount' => $pricediscount]);
+            }
             $discount->save();
             if ($request->file('photo')) {
                 $logo = optional($request->file('photo'))->store('public/discount_img');

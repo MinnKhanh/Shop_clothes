@@ -11,6 +11,7 @@ use App\Models\Type;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,7 @@ class MainController extends Controller
     }
     public function index(Request $request)
     {
+        // Artisan::call('cache:clear');
         if (Cache::has('index')) {
             return Cache::get('index');
         } else {
@@ -70,7 +72,7 @@ class MainController extends Controller
                 }])->whereDate('begin', '<=', date('Y-m-d'))->whereDate('end', '>=', date('Y-m-d'));
             }])->join('discount', 'discount.id', 'introduces.relate_id')->where('introduces.active', 2)->where('introduces.type', 1)->orderBy('discount.created_at', 'DESC')->select(DB::raw('introduces.*'), DB::raw('discount.persent as persent'),  DB::raw('discount.created_at as date'), DB::raw('discount.unit as unit'))->offset(0)->limit(2)->get()->toArray();
             //  dd(DB::getQueryLog());
-            // dd($discountshow, auth()->user()->id);
+            // dd($discountshow);
             $cachedData = view('index', ['typenav' => $type, 'product' => $products, 'brand' => $brand, 'productfeatured' => $productfeatured, 'introduce' => $introduce, 'discountshow' => $discountshow])->render();
             Cache::put('index', $cachedData);
             return $cachedData;

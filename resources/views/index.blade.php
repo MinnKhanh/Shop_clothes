@@ -418,23 +418,31 @@
                                 </div>
                             </div>
                             <div class="col-12 text-center"> {{ $item['description'] }}</div>
-                            <div class="col-12 text-center"> {{ $item['discount']['begin'] }} -
-                                {{ $item['discount']['end'] }}</div>
+                            @if ($item['discount'])
+                                <div class="col-12 text-center"> {{ $item['discount']['begin'] }} -
+                                    {{ $item['discount']['end'] }}</div>
+                            @else
+                                <div class="col-12 text-center">Đã hết hạn</div>
+                            @endif
+
                         </div>
                     </div>
                     {{-- @php
                         dd($item['discount']['discount_user'] ? '' : 'disabled');
                     @endphp --}}
                     <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                        @if (auth()->check())
-                            <button type="button" class="btn btn-primary adddiscount"
-                                data-id="{{ $item['relate_id'] }}" data-user={{ auth()->user()->id }}
-                                {{ $item['discount']['discount_user'] ? 'disabled' : '' }}>
-                                {{ $item['discount']['discount_user'] ? 'Đã Nhận' : 'Nhận' }}
-                            </button>
+                        @if ($item['discount'])
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            @if (auth()->check())
+                                <button type="button" class="btn btn-primary adddiscount"
+                                    data-id="{{ $item['relate_id'] }}" data-user={{ auth()->user()->id }}
+                                    {{ $item['discount']['discount_user'] ? 'disabled' : '' }}>
+                                    {{ $item['discount']['discount_user'] ? 'Đã Nhận' : 'Nhận' }}
+                                </button>
+                            @else
+                                <a class="btn btn-primary" href="{{ route('auth.login') }}">Nhận</a>
+                            @endif
                         @else
-                            <a class="btn btn-primary" href="{{ route('auth.login') }}">Nhận</a>
                         @endif
                     </div>
                 </div>

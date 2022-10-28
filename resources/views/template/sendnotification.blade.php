@@ -1,9 +1,8 @@
-@component('mail::layout', ['title' => $title])
+@component('mail::layout', ['title' => $title, 'img' => asset("Shop_clothes/public/storage/$logo")])
     {{-- Header --}}
     @lang('Xin Chào!')
     @slot('header')
         @component('mail::header', ['web' => 'http://localhost/Shop_clothes/public/', 'logo' => asset("storage/$logo")])
-            {{ asset("storage/$logo") }}
         @endcomponent
     @endslot
 

@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Jobs\SendEmail;
 use App\Models\Discount;
 use App\Models\Img;
+use App\Models\Introduce;
 use App\Models\Orders;
 use App\Models\ProductDetail;
 use App\Models\Products;
@@ -22,6 +23,7 @@ use App\Models\Size;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -117,15 +119,34 @@ Route::group([
     'as'     => 'test.',
     'prefix' => 'test',
 ], static function () {
-    Route::get('/', [Testcontroller::class, 'index'])->name('index');
+    // Route::get('/', [Testcontroller::class, 'index'])->name('index');
     // Route::post('/import', [Testcontroller::class, 'import'])->name('import');
-    // Route::get('/', function () {
-    //     $listdiscount = DB::table('discount_user')->join('discount', 'discount.id', 'discount_user.id_discount')
-    //         ->whereDate('begin', '<=', date('Y-m-d'))->whereDate('end', '>=', date('Y-m-d'))->get()->toArray();
-    //     // ->select('discount_user.id_customer', 'discount.id', 'discount.code', 'discount.name')->get()->toArray();
-    //     dd($count = DB::table('discount_user')->where('id_customer', auth()->user()->id)->where('id_discount', 2)->where('use', 0)->count());
-    // })->name('put');
-
+    Route::get('/', function () {
+        $product = Products::join('product_detail', 'products.id', 'product_detail.id_product')
+            ->join('product_size', 'product_detail.id', 'product_size.id_productdetail')
+            ->join('color', 'color.id', 'product_detail.id_color')
+            ->join('size', 'size.id', 'product_size.size')
+            ->leftjoin('discount', 'discount.relation_id', 'products.id')
+            ->join('imgs', 'imgs.product_id', 'products.id')->where('imgs.type', 1)
+            ->select(
+                'products.name',
+                'products.id',
+                DB::raw(
+                    "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',products.price_discount,products.priceSell) as price"
+                ),
+                DB::raw(
+                    'imgs.path as img'
+                ),
+                DB::raw('products.code'),
+                DB::raw('product_detail.id_color'),
+                DB::raw('color.name as namecolor'),
+                DB::raw('product_size.quantity'),
+                DB::raw('product_size.size as idsize'),
+                DB::raw('product_detail.id as idProductDetail'),
+                DB::raw('size.name as namesize'),
+            )->first()->toArray();
+        dd($product);
+    })->name('put');
 });
 Route::get('auth/{social}', [AuthController::class, 'redirectToProvider'])->name('social');
 Route::get('auth/{social}/callback', [AuthController::class, 'handleProviderCallback']);

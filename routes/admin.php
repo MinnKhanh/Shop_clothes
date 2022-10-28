@@ -147,10 +147,10 @@ Route::group([
     'middleware' => 'checkadmin'
 ], static function () {
     Route::get('/', [DiscountController::class, 'index'])->name('index');
-    Route::delete('/delete', [DiscountController::class, 'delete'])->name('delete');
     Route::get('/edit', [DiscountController::class, 'edit'])->name('edit');
     Route::get('/create', [DiscountController::class, 'create'])->name('create');
     Route::post('/store', [DiscountController::class, 'store'])->name('store');
+    Route::delete('/delete', [DiscountController::class, 'delete'])->name('delete');
 });
 Route::group([
     'as'     => 'orderimport.',

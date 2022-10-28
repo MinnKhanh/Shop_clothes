@@ -28,6 +28,7 @@ class ProductController extends Controller
     }
     public function index()
     {
+        Artisan::call('cache:clear');
         if (Cache::has('products-index')) {
             return Cache::get('products-index');
         } else {
@@ -56,10 +57,25 @@ class ProductController extends Controller
             //         'typenav' => $typenav
             //     ]
             // );
+            // dd(Products::with('Img', 'BrandProduct')->leftjoin('discount', 'discount.relation_id', 'products.id')->select(
+            //     DB::raw(
+            //         "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+            //     ),
+            //     DB::raw(
+            //         'products.*'
+            //     )
+            // )->get()->toArray());
             $cachedData = view(
                 'products.index',
                 [
-                    'list' => Products::with('Img', 'BrandProduct')->get()->toArray(),
+                    'list' => Products::with('Img', 'BrandProduct')->leftjoin('discount', 'discount.relation_id', 'products.id')->select(
+                        DB::raw(
+                            "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+                        ),
+                        DB::raw(
+                            'products.*'
+                        )
+                    )->get()->toArray(),
                     'categories' => $categories,
                     'type' => $type,
                     'typenav' => $typenav
@@ -79,6 +95,7 @@ class ProductController extends Controller
         $rate = Rate::groupBy('id_product')->select('id_product', DB::raw('(sum(rate.number_stars)/count(rate.id_product)) as stars'));
         $product = Products::with('Img', 'BrandProduct')
             ->join('categories', 'categories.id', 'products.category')
+            ->leftjoin('discount', 'discount.relation_id', 'products.id')
             ->leftjoinSub($rate, 'rate', function ($join) {
                 $join->on('products.id', '=', 'rate.id_product');
             });
@@ -108,7 +125,11 @@ class ProductController extends Controller
         if ($request->input('search')) {
             $product->where('products.name', 'like', '%' . $request->get('search') . '%');
         }
-        $product = $product->select(DB::raw('products.*,IFNULL(rate.stars,0) as star'));
+        $product = $product->select(DB::raw('products.*,IFNULL(rate.stars,0) as star'), DB::raw(
+            "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+        ), DB::raw(
+            "discount.unit,discount.persent"
+        ),);
         if ($request->input('sort')) {
             if ($request->input('sort') == 'rate') {
                 $product->orderBy('rate.stars', 'DESC');
@@ -131,7 +152,14 @@ class ProductController extends Controller
     {
         $type = Type::with('Img', 'Categories')->withCount('Product')->get()->toArray();
         $data = ProductDetail::with(['colorProduct', 'Img' => fn ($query) => $query->where('type', 2)->where('img_index', 1)])->where('id_product', $request->input('id'))->get()->toArray();
-        $product = Products::with('Img')->where('id', $request->input('id'))->first()->toArray();
+        $product = Products::with('Img')->where('products.id', $request->input('id'))
+            ->leftjoin('discount', 'discount.relation_id', 'products.id')
+            ->select(DB::raw('products.*'), DB::raw(
+                "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+            ), DB::raw(
+                "discount.unit,discount.persent"
+            ),)
+            ->first()->toArray();
         $dataSuggest = Products::with('Img')->where('type', $product['type'])
             // ->where('category', $product['category'])
             ->where('id', '!=', $product['id'])->get()->toArray();

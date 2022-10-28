@@ -71,6 +71,14 @@
           #autoComplete_list_1>li:hover {
               background-color: #f8f8f8
           }
+
+          .discount {
+              position: absolute;
+              z-index: 1;
+              background: yellow;
+              padding: 1rem 0.3rem;
+              left: 2rem;
+          }
       </style>
       {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.min.css"> --}}
   @endpush
@@ -338,7 +346,13 @@
                           let inner = ''
                           list.forEach(element => {
                               let price = Intl.NumberFormat('en-VN').format(element['priceSell'])
+                              let pricediscount = Intl.NumberFormat('en-VN').format(element['price_discount'])
+                              //   console.log(element)
+                              let labeldiscount = element['isdiscount'] == 1 ?
+                                  `<div class="discount-label red"> <span class="discount">${element['persent']}${ element['unit']==1?'%':'Đ'}</span> </div>` :
+                                  ''
                               inner += `  <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                                ${labeldiscount}
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
                             <img class="img-fluid w-100 imgProduct" src="{{ asset('storage/') }}/${element['img'][0]['path']}" alt="">
@@ -352,7 +366,11 @@
                         <div class="text-center py-4">
                             <a class="h6 text-decoration-none text-truncate" href="{{ route('product.productdetail') }}?id=${element['id']}">${element['name']}</a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>${price} Đ</h5>
+                                <h6>`
+                              inner += element['isdiscount'] == 1 ?
+                                  `<del style="color:#808080cc;">${price} Đ</del> ${pricediscount} Đ` :
+                                  price
+                              inner += `</h6>
                             </div>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
                                 <h5>Nhãn hàng: ${element['brand_product']['name']}</h5>

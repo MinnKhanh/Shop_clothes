@@ -24,19 +24,13 @@
                         <input type="text" class="d-none" name="id" value={{ $isedit }}>
                     @endif
                     <div class="row col-12">
-                        <div class="col-md-12 form-group mb-4">
-                            <label>Mã</label>
-                            <input class="form-control shadow-none rounded-0" id="code" type="text" name="code"
-                                value={{ isset($discount) ? $discount['code'] : '' }}>
-                            @if ($errors->has('code'))
-                                <div class="error">{{ $errors->first('code') }}</div>
-                            @endif
-                        </div>
-                        <div class="col-md-6 form-group mb-4 d-none">
+                        <div class="col-md-6 form-group mb-4">
                             <label>Loại</label>
                             <select class="form-control shadow-none rounded-0" id="type" name="type">
                                 @forelse (DiscountTypeEnum::getValues() as $item)
-                                    <option value={{ $item }}>{{ DiscountTypeEnum::getTypesOfDiscount($item) }}
+                                    <option {{ isset($discount) ? ($discount['type'] == $item ? 'selected' : '') : '' }}
+                                        value={{ $item }}>
+                                        {{ DiscountTypeEnum::getTypesOfDiscount($item) }}
                                     </option>
                                 @empty
                                 @endforelse
@@ -45,6 +39,35 @@
                                 <div class="error">{{ $errors->first('type') }}</div>
                             @endif
                         </div>
+                        <div class="col-md-6 form-group mb-4">
+                            <label>Mã</label>
+                            <input class="form-control shadow-none rounded-0" id="code" type="text" name="code"
+                                value={{ isset($discount) ? $discount['code'] : '' }}>
+                            @if ($errors->has('code'))
+                                <div class="error">{{ $errors->first('code') }}</div>
+                            @endif
+                        </div>
+
+                    </div>
+                    <div class="row col-12">
+                        <div class="col-md-12 form-group mb-4">
+                            <label>Sản Phẩm</label>
+                            <select class="form-control shadow-none rounded-0" id="product" name="product"
+                                {{ isset($discount) ? ($discount['type'] != 1 ? 'disabled' : '') : '' }}>
+                                @forelse ($listproduct as $item)
+                                    <option
+                                        {{ isset($discount) ? ($discount['type'] == 1 && $discount['relation_id'] == $item['id'] ? 'selected' : '') : '' }}
+                                        value={{ $item['id'] }}>
+                                        {{ $item['name'] }}
+                                    </option>
+                                @empty
+                                @endforelse
+                            </select>
+                            @if ($errors->has('product'))
+                                <div class="error">{{ $errors->first('product') }}</div>
+                            @endif
+                        </div>
+
                     </div>
                     <div class="row col-12">
                         <div class="col-md-6 form-group mb-4">
@@ -148,6 +171,12 @@
             })
             reader.readAsDataURL(this.files[0])
             console.log($(this).val())
+        })
+        $('#type').change(function() {
+            let value = $(this).val()
+            if (value == 1) {
+                $('#product').attr('disabled', false)
+            } else $('#product').attr('disabled', true)
         })
     </script>
 @endpush

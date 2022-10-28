@@ -48,6 +48,9 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <img src=" {!! html_entity_decode($img) !!}" alt="">
+                                </tr>
+                                <tr>
                                     <td class="content-cell">
                                         {!! html_entity_decode($slot) !!}
                                         {{ $subcopy ?? '' }}

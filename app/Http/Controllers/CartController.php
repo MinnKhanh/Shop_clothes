@@ -7,6 +7,7 @@ use App\Models\Discount;
 use App\Models\ProductDetail;
 use App\Models\Products;
 use App\Models\Type;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -44,13 +45,14 @@ class CartController extends Controller
                     ->join('color', 'color.id', 'product_detail.id_color')
                     ->where('products.id', $request->input('id'))
                     ->join('size', 'size.id', 'product_size.size')
+                    ->leftjoin('discount', 'discount.relation_id', 'products.id')
                     ->join('imgs', 'imgs.product_id', 'products.id')->where('imgs.type', 1)
                     ->where('product_detail.id_color', $request->input('color'))->where('product_size.size', $request->input('size'))
                     ->select(
                         'products.name',
                         'products.id',
                         DB::raw(
-                            'products.priceSell as price'
+                            "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',products.price_discount,products.priceSell) as price"
                         ),
                         DB::raw(
                             'imgs.path as img'

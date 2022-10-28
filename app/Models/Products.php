@@ -22,7 +22,8 @@ class Products extends Model
         'brand',
         'code',
         'status',
-        'featured'
+        'featured',
+        'price_discount'
     ];
     protected $cast = [
         'created_at' => 'date:Y-m-d',

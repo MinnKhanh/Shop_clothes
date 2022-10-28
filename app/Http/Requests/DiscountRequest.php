@@ -34,6 +34,8 @@ class DiscountRequest extends FormRequest
             'name' => ['required', 'string'],
             'photo' => request('id') ? '' : ['required', 'file'],
             'code' => ['required', Rule::unique('discount', 'code')->ignore(request('id'), 'id'),],
+            'product' => request('type') == 1 ? ['required', Rule::exists('discount', 'relation_id')] : '',
+
         ];
     }
 }

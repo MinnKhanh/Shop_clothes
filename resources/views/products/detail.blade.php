@@ -73,7 +73,15 @@
                         </div>
                         {{-- <small class="pt-1">(99 Reviews)</small> --}}
                     </div>
-                    <h3 class="font-weight-semi-bold mb-4">{{ number_format($product['priceSell'], 0, ',', ',') }} Đ</h3>
+                    <h3 class="font-weight-semi-bold mb-4">
+                        @if ($product['isdiscount'] == 1)
+                            <del style="color:#808080cc;">{{ number_format($product['priceSell'], 0, ',', ',') }} Đ</del>
+                            {{ $product['price_discount'] }} Đ
+                        @else
+                            {{ number_format($product['priceSell'], 0, ',', ',') }} Đ
+                        @endif
+
+                    </h3>
                     {{-- <p class="mb-4">{{ $product['description'] }}</p> --}}
                     <div class="d-flex mb-4">
                         <strong class="text-dark mr-3">Màu sắc:</strong>
