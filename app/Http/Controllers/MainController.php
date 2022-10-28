@@ -8,6 +8,7 @@ use App\Models\Discount;
 use App\Models\Introduce;
 use App\Models\Products;
 use App\Models\Type;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -38,27 +39,47 @@ class MainController extends Controller
                 ->join('product_detail', 'product_detail.id_product', 'products.id')
                 ->join('product_size', 'product_detail.id', 'product_size.id_productdetail')
                 ->orderBy('products.created_at', 'DESC')
-                ->groupBy('products.id', 'products.name', 'products.priceSell')
-                ->select('products.id', 'products.name', 'products.priceSell', DB::raw('sum(product_size.quantity) as quantity'))
+                ->leftjoin('discount', function ($join) {
+                    $join->on('discount.relation_id', '=', 'products.id');
+                })
+                ->select(
+                    'products.id',
+                    'products.name',
+                    'discount.persent',
+                    'discount.unit',
+                    DB::raw(
+                        "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+                    ),
+                    'products.priceSell',
+                    DB::raw('sum(product_size.quantity) as quantity')
+                )
+                ->groupBy('products.id', 'products.name', 'products.priceSell', 'discount.persent', 'discount.begin', 'discount.end', 'discount.unit')
                 ->offset(0)->limit(8)->get()->toArray();
             $productfeatured = Products::with('Img')
                 ->join('product_detail', 'product_detail.id_product', 'products.id')
                 ->join('product_size', 'product_detail.id', 'product_size.id_productdetail')
-                ->orderBy('products.created_at', 'DESC')
-                ->groupBy('products.id', 'products.name', 'products.priceSell')
+                ->leftjoin('discount', function ($join) {
+                    $join->on('discount.relation_id', '=', 'products.id');
+                })
                 ->join('rate', 'rate.id_product', 'products.id')
+                ->groupBy('products.id', 'products.name', 'products.priceSell', 'discount.persent', 'discount.begin', 'discount.end', 'discount.unit')
+                ->orderBy('products.created_at', 'DESC')
                 ->select(
                     'products.id',
                     'products.name',
                     'products.priceSell',
                     DB::raw('sum(product_size.quantity) as quantity'),
-                    DB::raw('(sum(rate.number_stars)/count(rate.id_product)) as number')
-                ) //->offset(0)->limit(8)->get()->toArray()
+                    DB::raw('(sum(rate.number_stars)/count(rate.id_product)) as number'),
+                    'discount.persent',
+                    'discount.unit',
+                    DB::raw(
+                        "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+                    )
+                )
                 // ->filter(function ($item, $key) {
                 //     return $item->number < 4;
                 // });
-                ->havingRaw('(sum(rate.number_stars)/count(rate.id_product)) >= 3')
-                ->offset(0)->limit(8)->get()->toArray();
+                ->havingRaw('(sum(rate.number_stars)/count(rate.id_product)) >= 3')->offset(0)->limit(8)->get()->toArray();
             // $pp = DB::table('products')->get()
             //     ->filter(function ($item, $key) {
             //         return $item->id < 6;

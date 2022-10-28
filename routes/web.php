@@ -122,30 +122,64 @@ Route::group([
     // Route::get('/', [Testcontroller::class, 'index'])->name('index');
     // Route::post('/import', [Testcontroller::class, 'import'])->name('import');
     Route::get('/', function () {
-        $product = Products::join('product_detail', 'products.id', 'product_detail.id_product')
+        $products = Products::with('Img')
+            ->join('product_detail', 'product_detail.id_product', 'products.id')
             ->join('product_size', 'product_detail.id', 'product_size.id_productdetail')
-            ->join('color', 'color.id', 'product_detail.id_color')
-            ->join('size', 'size.id', 'product_size.size')
-            ->leftjoin('discount', 'discount.relation_id', 'products.id')
-            ->join('imgs', 'imgs.product_id', 'products.id')->where('imgs.type', 1)
+            ->orderBy('products.created_at', 'DESC')
+            ->leftjoin('discount', function ($join) {
+                $join->on('discount.relation_id', '=', 'products.id');
+            })
             ->select(
-                'products.name',
                 'products.id',
+                'products.name',
+                'discount.persent',
+                'discount.unit',
                 DB::raw(
-                    "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',products.price_discount,products.priceSell) as price"
+                    "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
                 ),
+                'products.priceSell',
+                DB::raw('sum(product_size.quantity) as quantity')
+            )
+            ->groupBy('products.id', 'products.name', 'products.priceSell', 'discount.persent', 'discount.begin', 'discount.end', 'discount.unit')
+            ->get()->toArray();
+        $productfeatured = Products::with('Img')
+            ->join('product_detail', 'product_detail.id_product', 'products.id')
+            ->join('product_size', 'product_detail.id', 'product_size.id_productdetail')
+            ->leftjoin('discount', function ($join) {
+                $join->on('discount.relation_id', '=', 'products.id');
+            })
+            ->join('rate', 'rate.id_product', 'products.id')
+            ->groupBy('products.id', 'products.name', 'products.priceSell', 'discount.persent', 'discount.begin', 'discount.end', 'discount.unit')
+            ->orderBy('products.created_at', 'DESC')
+            ->select(
+                'products.id',
+                'products.name',
+                'products.priceSell',
+                DB::raw('sum(product_size.quantity) as quantity'),
+                DB::raw('(sum(rate.number_stars)/count(rate.id_product)) as number'),
+                'discount.persent',
+                'discount.unit',
                 DB::raw(
-                    'imgs.path as img'
-                ),
-                DB::raw('products.code'),
-                DB::raw('product_detail.id_color'),
-                DB::raw('color.name as namecolor'),
-                DB::raw('product_size.quantity'),
-                DB::raw('product_size.size as idsize'),
-                DB::raw('product_detail.id as idProductDetail'),
-                DB::raw('size.name as namesize'),
-            )->first()->toArray();
-        dd($product);
+                    "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+                )
+            )
+            // ->filter(function ($item, $key) {
+            //     return $item->number < 4;
+            // });
+            ->havingRaw('(sum(rate.number_stars)/count(rate.id_product)) >= 3')->offset(0)->limit(8)->get()->toArray();
+
+        // $products = Discount::rightjoinSub($products, 'product', function ($join) {
+        //     $join->on('discount.relation_id', '=', 'product.id');
+        // })->select(
+        //     DB::raw(
+        //         "discount.unit,discount.persent"
+        //     ),
+        //     DB::raw('product.*'),
+        //     DB::raw(
+        //         "if(discount.begin <= '" . Carbon::now()->format('Y-m-d') . "' && discount.end >= '" . Carbon::now()->format('Y-m-d') . "',1,0) as isdiscount"
+        //     ),
+        // )->offset(0)->limit(8)->get()->toArray();
+        dd($productfeatured);
     })->name('put');
 });
 Route::get('auth/{social}', [AuthController::class, 'redirectToProvider'])->name('social');

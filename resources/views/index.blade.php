@@ -136,6 +136,13 @@
             animation: push 1s infinite linear;
         }
 
+        .discount {
+            position: absolute;
+            z-index: 1;
+            background: yellow;
+            padding: 1rem 0.3rem;
+            left: 2rem;
+        }
 
         @keyframes spin {
             100% {
@@ -259,6 +266,12 @@
         <div class="row px-xl-5">
             @forelse ($product as $item)
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                    @if ($item['isdiscount'])
+                        <div class="discount-label red"> <span
+                                class="discount">{{ $item['persent'] }}{{ $item['unit'] == 1 ? '%' : 'Đ' }}</span> </div>
+                    @else
+                    @endif
+
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
                             <img class="img-fluid w-100" src={{ asset('storage/' . $item['img'][0]['path']) }}
@@ -332,6 +345,11 @@
         <div class="row px-xl-5">
             @forelse ($productfeatured as $item)
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                    @if ($item['isdiscount'])
+                        <div class="discount-label red"> <span
+                                class="discount">{{ $item['persent'] }}{{ $item['unit'] == 1 ? '%' : 'Đ' }}</span> </div>
+                    @else
+                    @endif
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
                             <img class="img-fluid w-100" src={{ asset('storage/' . $item['img'][0]['path']) }}
