@@ -41,6 +41,7 @@ class BrandController extends Controller
             $brand->name = $request->input('name');
             $brand->country = $request->input('country');
             $brand->description = $request->input('description');
+            $brand->website = $request->input('website');
             $brand->save();
             if ($request->file('photo')) {
                 $logo = optional($request->file('photo'))->store('public/brand_img');

@@ -172,6 +172,7 @@ class AuthController extends Controller
     }
     public function resetPassword(Request $request)
     {
+        // dd($request->input('token'));
         return view('auth.resetpassword', ['email' => $request->input('email'), 'typenav' => $this->typenav, 'token' => $request->input('token')]);
     }
     public function redirectToProvider($provider)

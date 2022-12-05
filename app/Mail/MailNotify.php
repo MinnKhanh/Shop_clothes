@@ -34,6 +34,7 @@ class MailNotify extends Mailable
      */
     public function build()
     {
+        // dd($this->type,$this->messenger)
         return $this->from('khanh0704495681@gmail.com')->view($this->type == 1 ? 'template.email' : 'template.resetpassword', ['messenger' => $this->messenger, 'email' => $this->data, 'token' => $this->token]);
     }
 }

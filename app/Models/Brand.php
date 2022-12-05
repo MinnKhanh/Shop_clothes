@@ -10,7 +10,7 @@ class Brand extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        'name', 'country', 'description'
+        'name', 'country', 'description', 'website'
     ];
     protected $table = 'brands';
     public function Img()

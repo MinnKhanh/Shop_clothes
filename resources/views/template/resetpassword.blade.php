@@ -9,11 +9,31 @@
 </head>
 
 <body>
+    <style>
+        .formreset {
+            width: 40%;
+            background-color: #fafafa;
+            border-radius: .5rem;
+            padding: 2rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .buttongo {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            background-color: #e7ff00f7;
+            border-radius: 5px;
+        }
+    </style>
     <h3>{{ $messenger }}</h3>
-    <form action="{{ route('auth.resetpassword') }}" method="GET">
+    <form action="http://localhost/Shop_clothes/public/auth/reset-password" method="GET" class="formreset">
+        {{-- @csrf --}}
         <input type="text" style="display: none;" name='email' value='{{ $email }}'>
         <input type="text" style="display: none;" name='token' value='{{ $token }}'>
-        <button class="btn btn-primary mb-3">Go</button>
+        <button class="btn btn-primary mb-3 buttongo">Go</button>
     </form>
 </body>
 

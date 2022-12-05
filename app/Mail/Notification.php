@@ -33,6 +33,6 @@ class Notification extends Mailable
      */
     public function build()
     {
-        return $this->from('khanh0704495681@gmail.com')->markdown('template.sendnotification', ['title' => $this->header, 'logo' => $this->img, 'messenger' => $this->messenger])->with('img', $this->img);;
+        return $this->view('template.mail', ['messenger' => $this->messenger, 'header' => $this->header, 'img' => $this->img]);
     }
 }

@@ -18,6 +18,7 @@ class CreateBrands extends Migration
             $table->string('name');
             $table->integer('country');
             $table->string('description');
+            $table->string('website')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

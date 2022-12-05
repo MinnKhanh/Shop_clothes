@@ -28,6 +28,7 @@ class BrandRequest extends FormRequest
             'photo' => request('id') ? '' : ['required', 'file'],
             'description' => ['required',],
             'country' => ['required',],
+            'website' => ['required',],
         ];
     }
 }

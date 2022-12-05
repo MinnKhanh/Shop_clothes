@@ -27,7 +27,7 @@
                         <input type="text" name="id" class="d-none" value={{ $brand['id'] }} id="id">
                     @endif
                     <div class="row col-12">
-                        <div class="col-md-6 form-group mb-4">
+                        <div class="col-md-4 form-group mb-4">
                             <label>Tên</label>
                             <input class="form-control shadow-none rounded-0" id="namecategory" type="text"
                                 name="name" value={{ isset($brand) ? $brand['name'] : '' }}>
@@ -35,12 +35,19 @@
                                 <div class="error">{{ $errors->first('name') }}</div>
                             @endif
                         </div>
-                        <div class="col-md-6 form-group mb-4">
+                        <div class="col-md-4 form-group mb-4">
                             <label>Quốc gia</label>
                             <select class="form-control shadow-none rounded-0" id="country" name="country">
                             </select>
                             @if ($errors->has('country'))
                                 <div class="error">{{ $errors->first('country') }}</div>
+                            @endif
+                        </div>
+                        <div class="col-md-4 form-group mb-4">
+                            <label>Website</label>
+                            <input type="text" class="form-control shadow-none rounded-0" id="website" name="website">
+                            @if ($errors->has('website'))
+                                <div class="error">{{ $errors->first('website') }}</div>
                             @endif
                         </div>
                     </div>
